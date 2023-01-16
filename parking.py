@@ -4,6 +4,7 @@ from ticket import *
 class Parking:
     def __init__(self, plazas):
         self.plazas = plazas
+        self.tickets = []
 
     def __str__(self):
         turismos = 0
@@ -30,8 +31,32 @@ class Parking:
                f"Motocicleta: {motocicletas_ocupados}/{motocicletas}\n" \
                f"Movilidad Reducida: {reducidos_ocupados}/{reducidos}"
 
-    def depositar(self, tipo, matricula):
-        id_plaza = -1
-        for i in self.plazas:
-            if i.tipo == tipo and i.ocupada == False: id_plaza = i.id
-        return Ticket(matricula, id_plaza)
+    def depositar(self, tipo, matricula):  # TODO hacer esto bien y manejar que no hay sitio suficiente
+        plaza = self.asignar_plaza(tipo)
+        ticket = None
+        if plaza != -1:
+            ticket = Ticket(matricula, plaza)
+            self.tickets.append(ticket)
+            return ticket
+        else:
+            return -1
+
+    def retirar(self, matricula, id_plaza, pin):
+        ticket = next(
+            (i for i in self.tickets if i.matricula == matricula and i.plaza.id == id_plaza and i.pin == pin), -1)
+        if ticket != -1:
+            return f"Tiene que pagar {((datetime.now() - ticket.fecha).total_seconds() / 60.0) * ticket.plaza.precio}"
+        else:
+            return "Datos Incorrectos"
+
+    def asignar_plaza(self, tipo):  # TODO hacer esto con un next
+        encontrado = False
+        cont = 0
+        while not encontrado:
+            if cont < len(self.plazas):
+                if self.plazas[cont].tipo == tipo and self.plazas[cont].ocupada == False:
+                    self.plazas[cont].ocupada = True
+                    return self.plazas[cont]
+                cont += 1
+            else:
+                return -1

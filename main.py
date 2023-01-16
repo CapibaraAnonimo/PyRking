@@ -17,9 +17,12 @@ for i in range(86, 101):
 
 parking = Parking(plazas)
 
+ticket = None
 
+ticket = parking.depositar('turismo', '1234qwe')
+print(ticket)
 
-
+print(parking.retirar('1234qwe', ticket.plaza.id, ticket.pin))
 
 while repetir:
     print(parking)
