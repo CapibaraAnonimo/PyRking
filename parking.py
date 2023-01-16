@@ -1,10 +1,13 @@
+from abono import Abono
 from ticket import *
+from vehiculo import Vehiculo
 
 
 class Parking:
     def __init__(self, plazas):
         self.plazas = plazas
         self.tickets = []
+        self.abonados = []
 
     def __str__(self):
         turismos = 0
@@ -33,7 +36,6 @@ class Parking:
 
     def depositar(self, tipo, matricula):  # TODO hacer esto bien y manejar que no hay sitio suficiente
         plaza = self.asignar_plaza(tipo)
-        ticket = None
         if plaza != -1:
             ticket = Ticket(matricula, plaza)
             self.tickets.append(ticket)
@@ -41,22 +43,44 @@ class Parking:
         else:
             return -1
 
+    def depositar_abonado(self, matricula, dni):
+        abonado = next((i for i in self.abonados if i.dni == dni and i.vehiculo.matricula == matricula), -1)
+        if abonado != -1:
+            next((i for i in self.plazas if (i.id == abonado.id_plaza)), -1).ocupada = False
+            ticket = Ticket(matricula, abonado.id_plaza)
+            self.tickets.append(ticket)
+            return ticket
+        else:
+            return -1
+
+    def anadir_abonado(self, dni, matricula, tipo):
+        correcto = True
+        for i in self.abonados:
+            if dni == i.dni or matricula == i.vehiculo.matricula:
+                correcto = False
+        plaza = self.asignar_plaza(tipo)
+        plaza.ocupada = False
+
+        if correcto and plaza.id != -1:
+            plaza.abonada = True
+            abonado = Abono(dni, Vehiculo(matricula, tipo), plaza.id)
+            self.abonados.append(abonado)
+            return "Se creo correctamente el abonado"
+        else:
+            return "Datos invalidos para la creación de un abono"
+
     def retirar(self, matricula, id_plaza, pin):
         ticket = next(
             (i for i in self.tickets if i.matricula == matricula and i.plaza.id == id_plaza and i.pin == pin), -1)
         if ticket != -1:
-            return f"Tiene que pagar {((datetime.now() - ticket.fecha).total_seconds() / 60.0) * ticket.plaza.precio}"
+            ticket.plaza.ocupada = False
+            self.tickets.remove(ticket)
+            return f"Tiene que pagar {round((((datetime.now() - ticket.fecha).total_seconds() / 60.0) * ticket.plaza.precio), 2)}€"
         else:
             return "Datos Incorrectos"
 
     def asignar_plaza(self, tipo):  # TODO hacer esto con un next
-        encontrado = False
-        cont = 0
-        while not encontrado:
-            if cont < len(self.plazas):
-                if self.plazas[cont].tipo == tipo and self.plazas[cont].ocupada == False:
-                    self.plazas[cont].ocupada = True
-                    return self.plazas[cont]
-                cont += 1
-            else:
-                return -1
+        i = next((i for i in self.plazas if not i.ocupada and i.tipo == tipo and not i.abonada), -1)
+        if i != -1:
+            i.ocupada = True
+        return i
