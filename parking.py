@@ -46,8 +46,10 @@ class Parking:
     def depositar_abonado(self, matricula, dni):
         abonado = next((i for i in self.abonados if i.dni == dni and i.vehiculo.matricula == matricula), -1)
         if abonado != -1:
-            next((i for i in self.plazas if (i.id == abonado.id_plaza)), -1).ocupada = False
-            ticket = Ticket(matricula, abonado.id_plaza)
+            plaza = next((i for i in self.plazas if (i.id == abonado.id_plaza)), -1)
+            plaza.ocupada = True
+            ticket = Ticket(matricula,
+                            plaza)  # TODO Hacer opcional el pin para podre introducirlo yo a mano cuando me haga falta
             self.tickets.append(ticket)
             return ticket
         else:
@@ -72,10 +74,21 @@ class Parking:
     def retirar(self, matricula, id_plaza, pin):
         ticket = next(
             (i for i in self.tickets if i.matricula == matricula and i.plaza.id == id_plaza and i.pin == pin), -1)
-        if ticket != -1:
+
+        if ticket != -1 and not ticket.plaza.abonada:
             ticket.plaza.ocupada = False
             self.tickets.remove(ticket)
             return f"Tiene que pagar {round((((datetime.now() - ticket.fecha).total_seconds() / 60.0) * ticket.plaza.precio), 2)}€"
+        else:
+            return "Datos Incorrectos"
+
+    def retirar_abonado(self, matricula, id_plaza, pin):
+        ticket = next(
+            (i for i in self.tickets if i.matricula == matricula and i.plaza.id == id_plaza and i.pin == pin), -1)
+        if ticket != -1 and ticket.plaza.abonada:
+            ticket.plaza.ocupada = False
+            self.tickets.remove(ticket)
+            return f"Datos correctos"
         else:
             return "Datos Incorrectos"
 
