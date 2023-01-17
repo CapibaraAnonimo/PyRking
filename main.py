@@ -1,4 +1,5 @@
 import atexit
+import datetime
 import time
 import pickle
 
@@ -239,9 +240,34 @@ while repetir:
                 fechaf = None
                 while fechas != 2:
                     try:
+                        if fechas == 0:
+                            print('Introduce los datos de la fecha de inicio')
+                        else:
+                            print('Introduce los datos del a fecha final')
                         ano = int(input('Introduce un año'))  # XD
+                        mes = int(input('Introduce un mes'))
+                        dia = int(input('Introduce un día'))
+                        hora = int(input('Introduce un hora'))
+                        if fechas == 0:
+                            fecha0 = datetime.datetime(ano, mes, dia, hora)
+                            if fecha0 >= datetime.datetime(2023, 1, 1, 00):
+                                print(fecha0)
+                                fechas = 1
+                                print('Fecha inicial correcta')
+                            else:
+                                print('Fecha inicial incorrecta')
+                        else:
+                            fechaf = datetime.datetime(ano, mes, dia, hora)
+                            if fechaf <= datetime.datetime.now():
+                                print(fechaf)
+                                fechas = 2
+                                print('Fecha final correcta')
+                            else:
+                                print('Fecha final incorrecta')
                     except:
                         print('Introduce un número')
+                facturacion = parking.facturacion(fecha0, fechaf)
+                print(f'Ha habido {facturacion[0]} transacciones, por un total de {facturacion[1]}€')
             elif opcion == 3:
                 1
             elif opcion == 4:
