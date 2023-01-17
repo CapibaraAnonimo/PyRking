@@ -26,7 +26,7 @@ print(parking.retirar('1234qwe', ticket.plaza.id, ticket.pin))
 ticket = parking.depositar_abonado('1234asd', '12345678q')
 print(ticket)
 
-print(parking.retirar_abonado('1234asd', ticket.plaza.id, ticket.pin))
+# print(parking.retirar_abonado('1234asd', ticket.plaza.id, ticket.pin))
 
 while repetir:
     print(parking)
@@ -74,7 +74,6 @@ if seccion == 1:
                     except:
                         print("Introduzca un número")
                 ticket = parking.depositar_abonado(matricula, dni)
-                print(ticket)
                 if ticket != -1:
                     correcto = True
                     print(ticket)
@@ -89,6 +88,36 @@ if seccion == 1:
                             raise Exception()
                     except:
                         print("No ha introducido una opción valida, saliendo...")
+        else:
+            correcto = False
 
+            while not correcto:
+                matricula = ''
+                plaza = ''
+                pin = 0
+                salir = 0
+                while 100000 >= pin <= 999999:
+                    try:
+                        matricula = input("Introduzca su matricula")
+                        plaza = int(input("Introduzca su plaza"))
+                        pin = int(input("Introduzca su pin"))
+                    except:
+                        print("Introduzca un número")
+                respuesta = parking.retirar_abonado(matricula, plaza, pin)
+                if respuesta == 'Datos correctos':
+                    correcto = True
+                    print(respuesta)
+                    print("Retire su vehiculo")
+                else:
+                    print(respuesta)
+                    try:
+                        salir = int(input("¿Quiere salir?\n1. Sí\n2. No"))
+                        if salir == 1:
+                            correcto = True
+                        elif salir != 2:
+                            correcto = True
+                            raise Exception()
+                    except:
+                        print("No ha introducido una opción valida, saliendo...")
 else:
     1

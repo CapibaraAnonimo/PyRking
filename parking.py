@@ -49,7 +49,8 @@ class Parking:
             plaza = next((i for i in self.plazas if (i.id == abonado.id_plaza)), -1)
             plaza.ocupada = True
             ticket = Ticket(matricula,
-                            plaza)  # TODO Hacer opcional el pin para podre introducirlo yo a mano cuando me haga falta
+                            plaza,
+                            abonado.pin)
             self.tickets.append(ticket)
             return ticket
         else:
@@ -92,7 +93,7 @@ class Parking:
         else:
             return "Datos Incorrectos"
 
-    def asignar_plaza(self, tipo):  # TODO hacer esto con un next
+    def asignar_plaza(self, tipo):
         i = next((i for i in self.plazas if not i.ocupada and i.tipo == tipo and not i.abonada), -1)
         if i != -1:
             i.ocupada = True
