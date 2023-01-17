@@ -227,7 +227,8 @@ while repetir:
                                        "4. Abonos\n"
                                        "5. Caducidad Abonos\n"
                                        "6. Salir"))
-                    if opcion not in [1, 2, 3, 4, 5, 6]: print("Sección no valida")
+                    if opcion not in [1, 2, 3, 4, 5, 6]:
+                        print("Sección no valida")
                 except:
                     print("Introduzca un número")
             if opcion == 1:
