@@ -1,5 +1,6 @@
 from abono import Abono
 from ticket import *
+from transaccion import Transaccion
 from vehiculo import Vehiculo
 
 
@@ -8,6 +9,7 @@ class Parking:
         self.plazas = plazas
         self.tickets = []
         self.abonados = []
+        self.transacciones = []
 
     def __str__(self):
         turismos = 0
@@ -18,15 +20,15 @@ class Parking:
         reducidos_ocupados = 0
 
         for i in self.plazas:
-            if i.tipo == 'turismo':
+            if i.tipo == 'turismo' and not i.abonada:
                 turismos += 1
                 turismos_ocupados = turismos_ocupados + 1 if i.ocupada else turismos_ocupados
 
-            if i.tipo == 'motocicleta':
+            if i.tipo == 'motocicleta' and not i.abonada:
                 motocicletas += 1
                 motocicletas_ocupados = motocicletas_ocupados + 1 if i.ocupada else motocicletas_ocupados
 
-            if i.tipo == 'reducido':
+            if i.tipo == 'reducido' and not i.abonada:
                 reducidos += 1
                 reducidos_ocupados = reducidos_ocupados + 1 if i.ocupada else reducidos_ocupados
 
@@ -79,7 +81,9 @@ class Parking:
         if ticket != -1 and not ticket.plaza.abonada:
             ticket.plaza.ocupada = False
             self.tickets.remove(ticket)
-            return f"Tiene que pagar {round((((datetime.now() - ticket.fecha).total_seconds() / 60.0) * ticket.plaza.precio), 2)}€"
+            importe = round((((datetime.now() - ticket.fecha).total_seconds() / 60.0) * ticket.plaza.precio), 2)
+            self.transacciones.append(Transaccion(importe))
+            return f"Tiene que pagar {importe}€"
         else:
             return "Datos Incorrectos"
 
@@ -98,3 +102,58 @@ class Parking:
         if i != -1:
             i.ocupada = True
         return i
+
+    def estado_parking(self):
+        turismos = 0
+        turismos_ocupados = 0
+        turismos_abonado = 0
+        turismos_ocupados_abonado = 0
+        motocicletas = 0
+        motocicletas_ocupados = 0
+        motocicletas_abonados = 0
+        motocicletas_ocupados_abonados = 0
+        reducidos = 0
+        reducidos_ocupados = 0
+        reducidos_abonados = 0
+        reducidos_ocupados_abonados = 0
+
+        for i in self.plazas:
+            if i.tipo == 'turismo':
+                if not i.abonada:
+                    turismos += 1
+                    turismos_ocupados = turismos_ocupados + 1 if i.ocupada else turismos_ocupados
+                else:
+                    turismos_abonado += 1
+                    turismos_ocupados_abonado = turismos_ocupados_abonado + 1 if i.ocupada else turismos_ocupados_abonado
+
+            if i.tipo == 'motocicleta':
+                if not i.abonada:
+                    motocicletas += 1
+                    motocicletas_ocupados = motocicletas_ocupados + 1 if i.ocupada else motocicletas_ocupados
+                else:
+                    motocicletas_abonados += 1
+                    motocicletas_ocupados_abonados = motocicletas_ocupados_abonados + 1 if i.ocupada else motocicletas_ocupados_abonados
+
+            if i.tipo == 'reducido':
+                if not i.abonada:
+                    reducidos += 1
+                    reducidos_ocupados = reducidos_ocupados + 1 if i.ocupada else reducidos_ocupados
+                else:
+                    reducidos_abonados += 1
+                reducidos_ocupados_abonados = reducidos_ocupados_abonados + 1 if i.ocupada else reducidos_ocupados_abonados
+
+        return f"Turismos: {turismos_ocupados}/{turismos}\n" \
+               f"Turismos abonados: {turismos_ocupados_abonado}/{turismos_abonado}\n" \
+               f"Motocicleta: {motocicletas_ocupados}/{motocicletas}\n" \
+               f"Motocicleta abonados: {motocicletas_ocupados_abonados}/{motocicletas_abonados}\n" \
+               f"Movilidad Reducida: {reducidos_ocupados}/{reducidos}\n" \
+               f"Movilidad Reducida abonados: {reducidos_ocupados_abonados}/{reducidos_abonados}"
+
+    def facturacion(self, fecha0, fechaf):
+        total = 0
+        numero = 0
+        for fac in self.transacciones:
+            if fecha0 <= fac.fecha <= fechaf:
+                total += fac.importe
+                numero += 1
+        return numero, total
