@@ -1,3 +1,5 @@
+import datetime
+
 from abono import Abono
 from ticket import *
 from transaccion import Transaccion
@@ -38,7 +40,11 @@ class Parking:
 
     def depositar(self, tipo, matricula):  # TODO hacer esto bien y manejar que no hay sitio suficiente
         plaza = self.asignar_plaza(tipo)
-        if plaza != -1:
+        valido = True
+        for t in self.tickets:
+            if t.matricula == matricula:
+                valido = False
+        if plaza != -1 and valido:
             ticket = Ticket(matricula, plaza)
             self.tickets.append(ticket)
             return ticket
@@ -58,22 +64,6 @@ class Parking:
         else:
             return -1
 
-    def anadir_abonado(self, dni, matricula, tipo):
-        correcto = True
-        for i in self.abonados:
-            if dni == i.dni or matricula == i.vehiculo.matricula:
-                correcto = False
-        plaza = self.asignar_plaza(tipo)
-        plaza.ocupada = False
-
-        if correcto and plaza.id != -1:
-            plaza.abonada = True
-            abonado = Abono(dni, Vehiculo(matricula, tipo), plaza.id)
-            self.abonados.append(abonado)
-            return "Se creo correctamente el abonado"
-        else:
-            return "Datos invalidos para la creación de un abono"
-
     def retirar(self, matricula, id_plaza, pin):
         ticket = next(
             (i for i in self.tickets if i.matricula == matricula and i.plaza.id == id_plaza and i.pin == pin), -1)
@@ -81,7 +71,8 @@ class Parking:
         if ticket != -1 and not ticket.plaza.abonada:
             ticket.plaza.ocupada = False
             self.tickets.remove(ticket)
-            importe = round((((datetime.now() - ticket.fecha).total_seconds() / 60.0) * ticket.plaza.precio), 2)
+            importe = round((((datetime.datetime.now() - ticket.fecha).total_seconds() / 60.0) * ticket.plaza.precio),
+                            2)
             self.transacciones.append(Transaccion(importe))
             return f"Tiene que pagar {importe}€"
         else:
@@ -157,3 +148,29 @@ class Parking:
                 total += fac.importe
                 numero += 1
         return numero, total
+
+    def consulta_abonos(self):
+        if len(self.abonados) < 1:
+            print('No hay abonados')
+        else:
+            for a in self.abonados:
+                if a.desactivacion > datetime.datetime.now():
+                    print(f'Dni: {a.dni}:')
+                    for t in a.transacciones:
+                        print(f'    {t}')
+
+    def anadir_abonado(self, dni, matricula, tipo, meses, tarjeta):
+        correcto = True
+        for i in self.abonados:
+            if dni == i.dni or matricula == i.vehiculo.matricula:
+                correcto = False
+        plaza = self.asignar_plaza(tipo)
+        plaza.ocupada = False
+
+        if correcto and plaza != -1:
+            plaza.abonada = True
+            abonado = Abono(dni, Vehiculo(matricula, tipo), plaza.id, meses, tarjeta)
+            self.abonados.append(abonado)
+            return "Se creo correctamente el abonado"
+        else:
+            return "Datos invalidos para la creación de un abono"

@@ -7,4 +7,4 @@ class Transaccion:
         self.importe = importe
 
     def __str__(self):
-        return str(self.importe)
+        return 'Fecha ' + str(self.fecha.replace(microsecond=0)) + '    Importe: ' + str(self.importe)
