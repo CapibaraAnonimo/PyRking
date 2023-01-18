@@ -7,7 +7,7 @@ from parking import Parking
 from plaza import Plaza
 
 print('\n\n\n\n-----No detenga el programa de manera manual o no se guardarán los cambios realizados-----')
-time.sleep(3)
+time.sleep(0)  # TODO poner esto a 3 antes de entregar
 
 repetir = True
 
@@ -38,7 +38,7 @@ def pre_exit():
         arc.close()
 
 
-parking.anadir_abonado("12345678q", "1234asd", 'turismo')
+parking.anadir_abonado("12345678q", "1234asd", 'turismo', 3, '12345678', 'Adrián', 'Arnaiz Cano')
 
 ticket = parking.depositar('turismo', '1234qwe')
 print(ticket)
@@ -249,7 +249,7 @@ while repetir:
                         hora = int(input('Introduce un hora\n>'))
                         if fechas == 0:
                             fecha0 = datetime.datetime(ano, mes, dia, hora)
-                            if fecha0 >= datetime.datetime(2023, 1, 1, 00):
+                            if datetime.datetime(2023, 1, 1, 00) <= fecha0 <= datetime.datetime.now():
                                 print(fecha0)
                                 fechas = 1
                                 print('Fecha inicial correcta')
@@ -257,7 +257,7 @@ while repetir:
                                 print('Fecha inicial incorrecta')
                         else:
                             fechaf = datetime.datetime(ano, mes, dia, hora)
-                            if fechaf <= datetime.datetime.now():
+                            if datetime.datetime.now() >= fechaf >= datetime.datetime(2023, 1, 1, 00):
                                 print(fechaf)
                                 fechas = 2
                                 print('Fecha final correcta')
@@ -272,21 +272,24 @@ while repetir:
             elif opcion == 4:
                 ab_opcion = 0
 
-                while ab_opcion is not [1, 2, 3]:
+                while ab_opcion not in [1, 2, 3]:
                     try:
                         ab_opcion = int(
-                            input('1. Dar de alta un nuevo abono\n2. Modificar un abonado\n3. Dar de baja\n>'))
-                        if ab_opcion is not [1, 2, 3]:
+                            input(
+                                '1. Dar de alta un nuevo abono\n2. Modificar un abonado\n3. Dar de baja\n>'))  # TODO añadir un salir
+                        if ab_opcion not in [1, 2, 3]:
                             print('Introduce una opción válida')
                     except:
                         print('Introduce un número')
                 if ab_opcion == 1:
-                    alta_correcto: False
+                    alta_correcto = False
                     dni = ''
                     matricula = ''
                     tipo = 0
                     meses = 0
                     tarjeta = 0
+                    nombre = ''
+                    apellido = ''
 
                     while not alta_correcto:
                         try:
@@ -295,6 +298,8 @@ while repetir:
                             tipo = int(input("Tipo de vehiculo\n1. Turismo\n2. Motocicleta\n3. Movilidad reducida\n>"))
                             meses = int(input("Meses de abono\n1. 1 mes\n2. 3 meses\n3. 6 meses\n4. 12 meses\n>"))
                             tarjeta = input("Introduce la tarjeta\n>")
+                            nombre = input('Introduce el nombre\n>')
+                            apellido = input('Introduce los apellidos\n>')
                         except:
                             print('Introduce un número')
                         if tipo == 1:
@@ -310,13 +315,33 @@ while repetir:
                             meses = 3
                         elif meses == 3:
                             meses = 6
-                        elif meses == 3:
+                        elif meses == 4:
                             meses = 12
-                        if tipo in ['turismo', 'motocicleta', 'reducido'] and meses in [1, 3, 6, 12]:
+                        if tipo in ['turismo', 'motocicleta', 'reducido'] and meses in [1, 3, 6, 12] \
+                                and nombre != '' and apellido != '':
                             alta_correcto = True
-                    parking.anadir_abonado(dni, matricula, tipo, meses, tarjeta)
+                            print(parking.anadir_abonado(dni, matricula, tipo, meses, tarjeta, nombre, apellido))
+                        else:
+                            print('Datos incorrectos')
                 elif ab_opcion == 2:
-                    1
+                    mod_opcion = 0
+
+                    while not mod_opcion not in [1, 2, 3]:
+                        try:
+                            mod_opcion = int(input('1. Modificar datos de un abonado\n2. Renovar abono\n3. Salir'))
+                            if mod_opcion not in [1, 2, 3]:
+                                print('Introduzca una sección válida')
+                        except:
+                            print('Introduce un número')
+                    if mod_opcion == 1:
+                        print('Para dejar el campo como está pulse intro sin introducir nada')
+
+                        nombre = input('Introduce el nuevo nombre')
+                        apellidos = input('Introduce los nuevos apellidos')
+                        tarjeta = input('Introduce la nuevas tarjeta')
+
+                    elif mod_opcion == 2:
+                        1
                 else:
                     1
             elif opcion == 5:

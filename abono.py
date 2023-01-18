@@ -6,7 +6,7 @@ from transaccion import Transaccion
 
 
 class Abono:
-    def __init__(self, dni, vehiculo, id_plaza, meses, tarjeta):
+    def __init__(self, dni, vehiculo, id_plaza, meses, tarjeta, nombre, apellidos):
         self.dni = dni
         self.vehiculo = vehiculo
         self.id_plaza = id_plaza
@@ -17,6 +17,14 @@ class Abono:
         self.tarjeta = tarjeta
         self.transacciones = []
         self.add_transaccion(self.meses)
+        self.nombre = nombre
+        self.apellidos = apellidos
+
+    def __str__(self):
+        cadena = f'Dni: {self.dni}:'
+        for t in self.transacciones:
+            cadena = cadena + f'\n    {t}'
+        return cadena
 
     def add_transaccion(self, meses):
         if meses == 1:
@@ -34,3 +42,11 @@ class Abono:
             self.activacion = datetime.datetime.now()
             self.desactivacion = self.activacion + relativedelta(months=meses)
             print(f"Se reactivó correctamente el abono con {meses} meses")
+
+    def modificar(self, nombre, apellidos, tarjeta):
+        if nombre != '':
+            self.nombre = nombre
+        if apellidos != '':
+            self.apellidos = apellidos
+        if tarjeta != '':
+            self.tarjeta = tarjeta

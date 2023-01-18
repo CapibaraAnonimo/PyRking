@@ -8,10 +8,18 @@ from vehiculo import Vehiculo
 
 class Parking:
     def __init__(self, plazas):
-        self.plazas = plazas
+        self._plazas = plazas
         self.tickets = []
         self.abonados = []
         self.transacciones = []
+
+    @property
+    def plazas(self):
+        return self._plazas
+
+    @plazas.setter
+    def plazas(self, a):
+        self._plazas = a
 
     def __str__(self):
         turismos = 0
@@ -155,11 +163,9 @@ class Parking:
         else:
             for a in self.abonados:
                 if a.desactivacion > datetime.datetime.now():
-                    print(f'Dni: {a.dni}:')
-                    for t in a.transacciones:
-                        print(f'    {t}')
+                    print(a)
 
-    def anadir_abonado(self, dni, matricula, tipo, meses, tarjeta):
+    def anadir_abonado(self, dni, matricula, tipo, meses, tarjeta, nombre, apellidos):
         correcto = True
         for i in self.abonados:
             if dni == i.dni or matricula == i.vehiculo.matricula:
@@ -169,8 +175,13 @@ class Parking:
 
         if correcto and plaza != -1:
             plaza.abonada = True
-            abonado = Abono(dni, Vehiculo(matricula, tipo), plaza.id, meses, tarjeta)
+            abonado = Abono(dni, Vehiculo(matricula, tipo), plaza.id, meses, tarjeta, nombre, apellidos)
             self.abonados.append(abonado)
             return "Se creo correctamente el abonado"
+        elif not correcto:
+            return "O el dni o la matricula ya está registrada en el sistema"
         else:
-            return "Datos invalidos para la creación de un abono"
+            return 'No hay hueco ahora mismo'
+
+    def modificar_abono(self, dni, nombre, apellidos, tarjeta):
+
