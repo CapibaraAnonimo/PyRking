@@ -2,12 +2,13 @@ import datetime
 import random
 from dateutil.relativedelta import relativedelta
 
-from transaccion import Transaccion
+from model.cliente import Cliente
+from model.transaccion import Transaccion
 
 
-class Abono:
+class Abono(Cliente):
     def __init__(self, dni, vehiculo, id_plaza, meses, tarjeta, nombre, apellidos):
-        self._dni = dni
+        super().__init__(dni, nombre, apellidos)
         self._vehiculo = vehiculo
         self._id_plaza = id_plaza
         self._pin = random.randint(100000, 1000000)
@@ -18,16 +19,7 @@ class Abono:
         self._tarjeta = tarjeta
         self._transacciones = []
         self.add_transaccion(self.meses)
-        self._nombre = nombre
-        self._apellidos = apellidos
 
-    @property
-    def dni(self):
-        return self._dni
-
-    @dni.setter
-    def dni(self, a):
-        self._dni = a
 
     @property
     def vehiculo(self):
@@ -93,22 +85,6 @@ class Abono:
     def transacciones(self, a):
         self._transacciones = a
 
-    @property
-    def nombre(self):
-        return self._nombre
-
-    @nombre.setter
-    def nombre(self, a):
-        self._nombre = a
-
-    @property
-    def apellidos(self):
-        return self._apellidos
-
-    @apellidos.setter
-    def apellidos(self, a):
-        self._apellidos = a
-
     def __str__(self):
         cadena = f'Dni: {self.dni}:'
         for t in self.transacciones:
@@ -135,7 +111,7 @@ class Abono:
         self.add_transaccion(meses)
         print(f"Se renovó correctamente el abono con {meses} meses")
 
-    def modificar(self, nombre, apellidos, tarjeta):
+    def modificar(self, nombre, apellidos, tarjeta, *args, **kwargs):
         if nombre != '':
             self.nombre = nombre
         if apellidos != '':
@@ -150,3 +126,4 @@ class Abono:
         self.apellidos = ''
         self.tarjeta = ''
         self.vehiculo = None
+        self.id_plaza = -1

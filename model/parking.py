@@ -1,11 +1,9 @@
-import datetime
-
 from dateutil.relativedelta import relativedelta
 
-from abono import Abono
-from ticket import *
-from transaccion import Transaccion
-from vehiculo import Vehiculo
+from model.abono import Abono
+from model.ticket import *
+from model.transaccion import Transaccion
+from model.vehiculo import Vehiculo
 
 
 class Parking:
@@ -72,7 +70,7 @@ class Parking:
                f"Motocicleta: {motocicletas_ocupados}/{motocicletas}\n" \
                f"Movilidad Reducida: {reducidos_ocupados}/{reducidos}"
 
-    def depositar(self, tipo, matricula):  # TODO hacer esto bien y manejar que no hay sitio suficiente
+    def depositar(self, tipo, matricula):
         plaza = self.asignar_plaza(tipo)
         valido = True
         for t in self.tickets:
@@ -85,7 +83,8 @@ class Parking:
         else:
             return -1
 
-    def depositar_abonado(self, matricula, dni):
+    def depositar_abonado(self, matricula,
+                          dni):  # Si el abono ha caducado no podrá aparcar pero no se le desasignará la plaza por si quiere renovar el abono
         abonado = next((i for i in self.abonados if i.dni == dni and i.vehiculo.matricula == matricula), -1)
         if abonado != -1:
             plaza = next((i for i in self.plazas if (i.id == abonado.id_plaza)), -1)
@@ -98,7 +97,7 @@ class Parking:
         else:
             return -1
 
-    def retirar(self, matricula, id_plaza, pin):
+    def retirar(self, matricula, id_plaza, pin):  # Considero que se podrá sacar el coche si el abono ha caducado
         ticket = next(
             (i for i in self.tickets if i.matricula == matricula and i.plaza.id == id_plaza and i.pin == pin), -1)
 
@@ -258,6 +257,7 @@ class Parking:
     def baja_abono(self, dni):
         abonado = next((i for i in self.abonados if i.dni == dni), -1)
         if abonado != -1:
+            next(i for i in self.plazas if i.id == abonado.id_plaza).abonada = False
             abonado.baja()
             return 'Se dio de baja el abono'
         return 'No existe ese abono'

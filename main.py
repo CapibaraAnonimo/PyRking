@@ -3,8 +3,8 @@ import datetime
 import time
 import pickle
 
-from parking import Parking
-from plaza import Plaza
+from model.parking import Parking
+from model.plaza import Plaza
 
 print('\n\n\n\n-----No detenga el programa de manera manual o no se guardarán los cambios realizados-----')
 time.sleep(0)  # TODO poner esto a 3 antes de entregar
@@ -372,7 +372,7 @@ while repetir:
                         elif dias == 4:
                             dias = 12
                         print(parking.renovar_abono(dni, dias))
-                elif opcion == 3:
+                elif ab_opcion == 3:
                     print(parking.listar_abonos())
                     dni = input('Introduce el dni que quiere dar de baja\n>')
                     print(parking.baja_abono(dni))
@@ -391,7 +391,6 @@ while repetir:
                     mes = 0
                     dia = 1
                     while ano == 0 and mes not in range(1, 13):
-                        print('Se entra en el bucle')
                         try:
                             ano = int(input('Introduce un año\n>'))  # XD
                             mes = int(input('Introduce un mes\n>'))
@@ -400,11 +399,9 @@ while repetir:
                     if caducidad_opt == 1:
                         dias = 30
                     else:
-                        print('Se entra en el else')
                         dias = 10
                         dia = 0
                         while 1 > dia or dia > 31:
-                            print('Se entra en el bucle 2')
                             dia = int(input('Introduce un día\n>'))
                     try:
                         parking.caducidad_abonos(datetime.datetime(year=ano, month=mes, day=dia), dias)
