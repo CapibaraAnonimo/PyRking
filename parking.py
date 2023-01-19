@@ -1,5 +1,7 @@
 import datetime
 
+from dateutil.relativedelta import relativedelta
+
 from abono import Abono
 from ticket import *
 from transaccion import Transaccion
@@ -9,9 +11,9 @@ from vehiculo import Vehiculo
 class Parking:
     def __init__(self, plazas):
         self._plazas = plazas
-        self.tickets = []
-        self.abonados = []
-        self.transacciones = []
+        self._tickets = []
+        self._abonados = []
+        self._transacciones = []
 
     @property
     def plazas(self):
@@ -20,6 +22,30 @@ class Parking:
     @plazas.setter
     def plazas(self, a):
         self._plazas = a
+
+    @property
+    def tickets(self):
+        return self._tickets
+
+    @tickets.setter
+    def tickets(self, a):
+        self._tickets = a
+
+    @property
+    def abonados(self):
+        return self._abonados
+
+    @abonados.setter
+    def abonados(self, a):
+        self._abonados = a
+
+    @property
+    def transacciones(self):
+        return self._transacciones
+
+    @transacciones.setter
+    def transacciones(self, a):
+        self._transacciones = a
 
     def __str__(self):
         turismos = 0
@@ -105,48 +131,72 @@ class Parking:
     def estado_parking(self):
         turismos = 0
         turismos_ocupados = 0
+        lista_turismos_ocupados = []
         turismos_abonado = 0
         turismos_ocupados_abonado = 0
+        lista_turismos_ocupados_abonado = []
         motocicletas = 0
         motocicletas_ocupados = 0
+        lista_motocicletas_ocupados = []
         motocicletas_abonados = 0
         motocicletas_ocupados_abonados = 0
+        lista_motocicletas_ocupados_abonados = []
         reducidos = 0
         reducidos_ocupados = 0
+        lista_reducidos_ocupados = []
         reducidos_abonados = 0
         reducidos_ocupados_abonados = 0
+        lista_reducidos_ocupados_abonados = []
 
         for i in self.plazas:
             if i.tipo == 'turismo':
                 if not i.abonada:
                     turismos += 1
                     turismos_ocupados = turismos_ocupados + 1 if i.ocupada else turismos_ocupados
+                    if i.ocupada:
+                        lista_turismos_ocupados.append(i)
                 else:
                     turismos_abonado += 1
                     turismos_ocupados_abonado = turismos_ocupados_abonado + 1 if i.ocupada else turismos_ocupados_abonado
+                    if i.ocupada:
+                        lista_turismos_ocupados_abonado.append(i)
 
             if i.tipo == 'motocicleta':
                 if not i.abonada:
                     motocicletas += 1
                     motocicletas_ocupados = motocicletas_ocupados + 1 if i.ocupada else motocicletas_ocupados
+                    if i.ocupada:
+                        lista_motocicletas_ocupados.append(i)
                 else:
                     motocicletas_abonados += 1
                     motocicletas_ocupados_abonados = motocicletas_ocupados_abonados + 1 if i.ocupada else motocicletas_ocupados_abonados
+                    if i.ocupada:
+                        lista_motocicletas_ocupados_abonados.append(i)
 
             if i.tipo == 'reducido':
                 if not i.abonada:
                     reducidos += 1
                     reducidos_ocupados = reducidos_ocupados + 1 if i.ocupada else reducidos_ocupados
+                    if i.ocupada:
+                        lista_reducidos_ocupados.append(i)
                 else:
                     reducidos_abonados += 1
-                reducidos_ocupados_abonados = reducidos_ocupados_abonados + 1 if i.ocupada else reducidos_ocupados_abonados
+                    reducidos_ocupados_abonados = reducidos_ocupados_abonados + 1 if i.ocupada else reducidos_ocupados_abonados
+                    if i.ocupada:
+                        lista_reducidos_ocupados_abonados.append(i)
 
         return f"Turismos: {turismos_ocupados}/{turismos}\n" \
+               f"    Plazas Turismos ocupadas: {''.join(str(l) + ', ' for l in lista_turismos_ocupados)}\n" \
                f"Turismos abonados: {turismos_ocupados_abonado}/{turismos_abonado}\n" \
+               f"    Plazas Turismos abonados ocupadas: {''.join(str(l) + ', ' for l in lista_turismos_ocupados_abonado)}\n" \
                f"Motocicleta: {motocicletas_ocupados}/{motocicletas}\n" \
+               f"    Plazas Motocicletas ocupadas: {''.join(str(l) + ', ' for l in lista_motocicletas_ocupados)}\n" \
                f"Motocicleta abonados: {motocicletas_ocupados_abonados}/{motocicletas_abonados}\n" \
+               f"    Plazas Motocicletas abonadas ocupadas: {''.join(str(l) + ', ' for l in lista_motocicletas_ocupados_abonados)}\n" \
                f"Movilidad Reducida: {reducidos_ocupados}/{reducidos}\n" \
-               f"Movilidad Reducida abonados: {reducidos_ocupados_abonados}/{reducidos_abonados}"
+               f"    Plazas Movilidad Reducida ocupadas: {''.join(str(l) + ', ' for l in lista_reducidos_ocupados)}\n" \
+               f"Movilidad Reducida abonadas: {reducidos_ocupados_abonados}/{reducidos_abonados}\n" \
+               f"    Plazas Movilidad Reducida abonadas ocupadas: {''.join(str(l) + ', ' for l in lista_reducidos_ocupados_abonados)}\n"
 
     def facturacion(self, fecha0, fechaf):
         total = 0
@@ -184,4 +234,35 @@ class Parking:
             return 'No hay hueco ahora mismo'
 
     def modificar_abono(self, dni, nombre, apellidos, tarjeta):
+        abonado = next((i for i in self.abonados if i.dni == dni), -1)
+        if abonado != -1:
+            abonado.modificar(nombre, apellidos, tarjeta)
+            print(f'Se modificó el abono con dni {dni}')
+        else:
+            print(f'No se encontró ningún abono con dni {dni}')
 
+    def listar_abonos(self):
+        cadena = '-----Lista de Abonados-----'
+        for a in self.abonados:
+            cadena = cadena + f'\n{a.nombre} {a.apellidos}:\n    Dni: {a.dni}'
+        return cadena
+
+    def renovar_abono(self, dni, meses):
+        abonado = next((i for i in self.abonados if i.dni == dni), -1)
+        if abonado != -1:
+            abonado.renovar(meses)
+            return f'Tendrá  abono hasta {abonado.desactivacion}'
+        else:
+            return f'No se encontró ningún abono con dnni {dni}'
+
+    def baja_abono(self, dni):
+        abonado = next((i for i in self.abonados if i.dni == dni), -1)
+        if abonado != -1:
+            abonado.baja()
+            return 'Se dio de baja el abono'
+        return 'No existe ese abono'
+
+    def caducidad_abonos(self, fecha, dias):
+        for a in self.abonados:
+            if fecha <= a.desactivacion <= (fecha + relativedelta(days=dias)):
+                print(a)
