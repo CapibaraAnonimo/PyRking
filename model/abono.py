@@ -110,7 +110,7 @@ class Abono(Cliente):
         self.add_transaccion(meses)
         print(f"Se renovó correctamente el abono con {meses} meses")
 
-    def modificar(self, nombre, apellidos, tarjeta, *args, **kwargs):
+    def modificar(self, nombre, apellidos, tarjeta='', *args, **kwargs):
         if nombre != '':
             self.nombre = nombre
         if apellidos != '':

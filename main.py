@@ -7,7 +7,7 @@ from model.parking import Parking
 from model.plaza import Plaza
 
 print('\n\n\n\n-----No detenga el programa de manera manual o no se guardarán los cambios realizados-----')
-time.sleep(0)  # TODO poner esto a 3 antes de entregar
+time.sleep(3)  # TODO poner esto a 3 antes de entregar
 
 repetir = True
 
@@ -32,9 +32,9 @@ with open('PyRking.pkl', 'rb') as arc:
 
 @atexit.register
 def pre_exit():
-    print('Estamos saliendo de Latam manito')
     with open("PyRking.pkl", 'wb') as arc:
         pickle.dump(parking, arc)
+        print('Se ha guardado el estado del parking')
         arc.close()
 
 
@@ -51,14 +51,14 @@ def pre_exit():
 #
 # print(parking)
 # print(parking.listar_abonos())
-for i in parking.transacciones:
+for i in parking.transacciones:  # TODO quita esto antes de entregar
     print(i)
 
 while repetir:
     seccion = 0
     while seccion != 1 and seccion != 2 and seccion != 3:
         try:
-            seccion = int(input("Seleccione zona a acceder\n1. Zona usuario\n2. Zona administrador\n3. Salir\n>"))
+            seccion = int(input("\n\n\n\nSeleccione zona a acceder\n1. Zona usuario\n2. Zona administrador\n3. Salir\n>"))
             if seccion != 1 and seccion != 2 and seccion != 3:
                 print("Introduzca una sección válida")
         except:

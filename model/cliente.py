@@ -28,7 +28,7 @@ class Cliente:
     def apellidos(self, a):
         self._apellidos = a
 
-    def modificar(self, nombre, apellidos, *args, **kwargs):  # TODO comprobar que puedo usar el Liskov substitution principle
+    def modificar(self, nombre, apellidos, *args, **kwargs):
         if nombre != '':
             self.nombre = nombre
         if apellidos != '':
