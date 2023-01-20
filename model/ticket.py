@@ -5,8 +5,7 @@ import random
 class Ticket:
     def __init__(self, matricula, plaza, pin=random.randint(100000, 1000000)):
         self._matricula = matricula
-        self._fecha = datetime.datetime.strptime('01/16/23 10:00:26',
-                                                '%m/%d/%y %H:%M:%S')  # TODO esto hay que ponerlo en now antes de entregar
+        self._fecha = datetime.datetime.now()
         self._plaza = plaza
         self._pin = pin
 

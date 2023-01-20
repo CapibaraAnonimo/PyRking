@@ -11,23 +11,23 @@ time.sleep(0)  # TODO poner esto a 3 antes de entregar
 
 repetir = True
 
-plazas = []
+# plazas = []
+#
+# for i in range(1, 71):
+#     plazas.append(Plaza(i, "turismo", 0.12, False, False))
+#
+# for i in range(71, 86):
+#     plazas.append(Plaza(i, "motocicleta", 0.12, False, False))
+#
+# for i in range(86, 101):
+#     plazas.append(Plaza(i, "reducido", 0.12, False, False))
 
-for i in range(1, 71):
-    plazas.append(Plaza(i, "turismo", 0.12, False, False))
-
-for i in range(71, 86):
-    plazas.append(Plaza(i, "motocicleta", 0.12, False, False))
-
-for i in range(86, 101):
-    plazas.append(Plaza(i, "reducido", 0.12, False, False))
-
-# with open('PyRking.pkl', 'rb') as arc:
-#     parking = pickle.load(arc)
-#     arc.close()
+with open('PyRking.pkl', 'rb') as arc:
+    parking = pickle.load(arc)
+    arc.close()
 
 
-parking = Parking(plazas)
+# parking = Parking(plazas)
 
 
 @atexit.register
@@ -38,19 +38,21 @@ def pre_exit():
         arc.close()
 
 
-parking.anadir_abonado("12345678q", "1234asd", 'turismo', 1, '12345678', 'Adrián', 'Arnaiz Cano')
-parking.anadir_abonado("12345678w", "1234asf", 'turismo', 1, '12345678', 'Adrián', 'Arnaiz Cano')
-
-ticket = parking.depositar('turismo', '1234qwe')
-print(ticket)
+# parking.anadir_abonado("12345678q", "1234asd", 'turismo', 1, '12345678', 'Adrián', 'Arnaiz Cano')
+# parking.anadir_abonado("12345678w", "1234asf", 'turismo', 1, '12345678', 'Adrián', 'Arnaiz Cano')
+#
+# ticket = parking.depositar('turismo', '1234qwe')
+# print(ticket)
 # print(parking.retirar('1234qwe', ticket.plaza.id, ticket.pin))
-ticket = parking.depositar_abonado('1234asd', '12345678q')
-ticket = parking.depositar_abonado('1234asf', '12345678w')
-print(ticket)
+# ticket = parking.depositar_abonado('1234asd', '12345678q')
+# ticket = parking.depositar_abonado('1234asf', '12345678w')
+# print(ticket)
 # print(parking.retirar_abonado('1234asd', ticket.plaza.id, ticket.pin))
-
-print(parking)
-print(parking.listar_abonos())
+#
+# print(parking)
+# print(parking.listar_abonos())
+for i in parking.transacciones:
+    print(i)
 
 while repetir:
     seccion = 0

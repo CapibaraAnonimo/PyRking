@@ -20,7 +20,6 @@ class Abono(Cliente):
         self._transacciones = []
         self.add_transaccion(self.meses)
 
-
     @property
     def vehiculo(self):
         return self._vehiculo
